@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.neo.core.constants.ResponseFontendDefine;
 import com.neo.core.dto.PagingResponse;
 import com.neo.core.dto.ResponseModel;
+import com.neo.core.dto.logactionDTO;
 import com.neo.core.entities.logaction;
 import com.neo.core.service.Logactionservice;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("log-act")
@@ -52,7 +54,7 @@ public class LogactControler extends BaseController {
         sw.start();
         log.info(START_LOG, action);
         try {
-            Page<logaction> pageResult = null;
+            Page<logactionDTO> pageResult = null;
 
             // Nếu  rỗng hoặc chỉ chứa khoảng trắng, đặt  = null
             if (deviceCode != null && deviceCode.trim().isEmpty()) {
@@ -77,7 +79,7 @@ public class LogactControler extends BaseController {
                 responseModel.setCode(ResponseFontendDefine.CODE_NOT_FOUND+"");
                 return responseModel;
             }
-            PagingResponse<logaction> result = new PagingResponse<>();
+            PagingResponse<logactionDTO> result = new PagingResponse<>();
             result.setTotal(pageResult.getTotalElements());
             result.setItems(pageResult.getContent());
 
@@ -163,6 +165,11 @@ public class LogactControler extends BaseController {
             } finally {
                 log.info(END_LOG, action, sw.getTotalTimeSeconds());
             }
+    }
 
+
+    @PatchMapping("/delete-multiple")
+    public ResponseModel doDelete(@RequestBody List<Long> ids) {
+        return service.deleteMultiple(ids,request);
     }
 }
